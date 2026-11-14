@@ -33,8 +33,13 @@
 #include <Adafruit_SSD1306.h>
 
 // ============================ Options (edit these) =========================
-static const char* WIFI_SSID = "YOUR_WIFI_NAME";   // network the ESP32 joins ("" = own network only)
-static const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
+// Wi-Fi credentials live in secrets.h (git-ignored). Copy secrets.example.h to secrets.h and edit it.
+#if __has_include("secrets.h")
+  #include "secrets.h"
+#else
+  #define WIFI_SSID "YOUR_WIFI_NAME"        // network the ESP32 joins ("" = own network only)
+  #define WIFI_PASS "YOUR_WIFI_PASSWORD"
+#endif
 static const char* AP_SSID   = "PlantWater";   // own network if the Wi-Fi fails
 static const char* AP_PASS   = "plant1234";    // at least 8 characters
 static const uint32_t WIFI_TIMEOUT_MS = 12000;
@@ -287,12 +292,12 @@ const $=i=>document.getElementById(i);let S={};
 async function api(p){try{await fetch(p)}catch(e){}refresh()}
 function sim(n,v){const cur=n==='temp'?S.sim.temp:(S.sim[n]?1:0);api('/api/sim?name='+n+'&val='+(cur===v?0:v))}
 function F(c){return (c*9/5+32).toFixed(1)}
-async function refresh(){try{S=await (await fetch('/api/status')).json();draw(S);$('conn').textContent=S.net+' Â· '+S.ip}catch(e){$('conn').textContent='offline'}}
+async function refresh(){try{S=await (await fetch('/api/status')).json();draw(S);$('conn').textContent=S.net+' · '+S.ip}catch(e){$('conn').textContent='offline'}}
 function draw(s){const p=s.profiles[s.profile];
- $('temp').textContent=s.temp===null?'--':s.temp.toFixed(1)+' Â°C ('+F(s.temp)+' Â°F)'+(s.sim.temp?' *':'');
+ $('temp').textContent=s.temp===null?'--':s.temp.toFixed(1)+' °C ('+F(s.temp)+' °F)'+(s.sim.temp?' *':'');
  const tv=['<span class="badge mut">no data</span>','<span class="badge ok">Temperature OK</span>','<span class="badge bad">TOO HIGH for '+p.name+'</span>','<span class="badge bad">TOO LOW for '+p.name+'</span>'];
  $('tverdict').innerHTML=tv[s.tstatus];
- $('trange').textContent=p.tmin+' - '+p.tmax+' Â°C';
+ $('trange').textContent=p.tmin+' - '+p.tmax+' °C';
  $('rain').innerHTML=s.rain<0?'unknown':s.rain+' %'+(s.sim.rain?' <span class="simc">(simulated)</span>':'');
  $('rainverdict').innerHTML=s.rainblock?'<span class="badge warn">BLOCKED - rain will water it</span>':'<span class="badge ok">allowed</span>';
  $('soil').textContent=s.soil.toFixed(0)+' %'+(s.sim.soil?' *':'');
@@ -302,7 +307,7 @@ function draw(s){const p=s.profiles[s.profile];
  $('tank').innerHTML=s.tank?'<span class="badge bad">LOW'+(s.sim.tank?' (sim)':'')+'</span>':'<span class="badge ok">OK</span>';
  $('fail').textContent=s.failed+' / 3';
  $('profiles').innerHTML=s.profiles.map((q,i)=>'<button class="'+(i==s.profile?'sel':'')+'" onclick="api(\'/api/profile?id='+i+'\')">'+q.name+'</button>').join('');
- $('pinfo').textContent=p.need+': water below '+p.dry+' %, stop at '+p.wet+' %, healthy '+p.tmin+'-'+p.tmax+' Â°C';
+ $('pinfo').textContent=p.need+': water below '+p.dry+' %, stop at '+p.wet+' %, healthy '+p.tmin+'-'+p.tmax+' °C';
  $('s_rain').className=s.sim.rain?'on':'';$('s_tank').className=s.sim.tank?'on':'';$('s_soil').className=s.sim.soil?'on':'';
  $('s_th').className=s.sim.temp==1?'on':'';$('s_tl').className=s.sim.temp==2?'on':'';
  $('mute').textContent=s.buzzing?'Silence buzzer':(s.muted?'Buzzer silenced':'Silence buzzer');
