@@ -1,5 +1,8 @@
 # Automatic Plant Watering System (ESP32) - Smart Greenhouse, Stage 1
 
+[![Build firmware](https://github.com/lfoliveira08/plant-watering-esp32/actions/workflows/build.yml/badge.svg)](https://github.com/lfoliveira08/plant-watering-esp32/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 ESP32-based automatic plant waterer with a weather-aware web dashboard.
 Built by **Luis de Oliveira** and **Uriel Garcia** for ENGR 4399 ST: Cyber-Physical and IoT Systems (Fall 2026, University of the Incarnate Word).
 
@@ -13,6 +16,7 @@ The basic idea (soil sensor + relay + pump) is inspired by the Instagram video
 - Temperature judgement vs. 3 plant profiles (Basil, Aloe, Fern) with buzzer alert
 - OLED status screen and a web dashboard served by the ESP32 (`http://plantwater.local`) with simulation buttons
 - Fallback Wi-Fi access point `PlantWater` if the router is unreachable
+- Manual prime: hold the BOOT button to run the pump (max 5 s per press, refused when the tank is low)
 
 ## Hardware
 ESP32 dev board (30-pin), Keyestudio soil moisture + water level sensors, 1-ch 5 V relay (active-HIGH), submersible DC pump, SSD1306 OLED (I2C 0x3C), active buzzer.
@@ -26,18 +30,50 @@ ESP32 dev board (30-pin), Keyestudio soil moisture + water level sensors, 1-ch 5
 | D21 / D22 | OLED SDA / SCL |
 | 3V3 / VIN / GND | sensors+OLED / relay / common ground |
 
-Pump supply: + to relay COM, NO to pump red, pump black to supply -. Full wiring and report in `docs/`.
+Pump supply: + to relay COM, NO to pump red, pump black to supply -. Full wiring in [docs/wiki/Hardware.md](docs/wiki/Hardware.md).
 
-## Build and run
-1. Arduino IDE, board **ESP32 Dev Module**; install **Adafruit SSD1306** and **Adafruit GFX**.
-2. Open `firmware/RealHardware_Dashboard/RealHardware_Dashboard.ino` and set `WIFI_SSID` and `WIFI_PASS` (2.4 GHz). Never commit your real credentials.
-3. Calibrate `SOIL_RAW_DRY`, `SOIL_RAW_WET`, `LEVEL_LOW_RAW` from Serial Monitor readings (115200 baud).
-4. Test the relay polarity with `firmware/RelayTest` before connecting the pump.
-5. Open `http://plantwater.local` or the IP shown on the OLED.
+## Quick start
+1. Arduino IDE, board **ESP32 Dev Module**; install **Adafruit SSD1306** and **Adafruit GFX Library**.
+2. In `firmware/RealHardware_Dashboard/`, copy `secrets.example.h` to `secrets.h` and set `WIFI_SSID` / `WIFI_PASS` (2.4 GHz). `secrets.h` is git-ignored, so credentials never get committed.
+3. Calibrate `SOIL_RAW_DRY`, `SOIL_RAW_WET`, `LEVEL_LOW_RAW` from Serial Monitor readings (115200 baud). See [Calibration](docs/wiki/Calibration.md).
+4. Test the relay polarity with `firmware/RelayTest` **before** connecting the pump.
+5. Upload, then open `http://plantwater.local` or the IP shown on the OLED. If Wi-Fi fails, join the `PlantWater` network and open the IP shown on the OLED.
 
-## Docs
+## How it works
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+    IDLE --> WATERING: soil below start %, tank OK, no rain
+    WATERING --> SOAKING: target reached or 8 s max run
+    WATERING --> IDLE: tank low or rain expected
+    SOAKING --> IDLE: 30 s soak finished
+    SOAKING --> FAULT: 3 cycles without soil response
+    FAULT --> [*]: press EN after fixing
+```
+
+| Profile | Water below | Stop at | Healthy temp |
+|---|---|---|---|
+| Basil | 40 % | 70 % | 12-32 C |
+| Aloe | 15 % | 35 % | 10-35 C |
+| Fern | 50 % | 80 % | 16-27 C |
+
+## HTTP API
+| Endpoint | Purpose |
+|---|---|
+| `GET /` | Dashboard page |
+| `GET /api/status` | JSON with sensors, state, weather, profiles, events |
+| `GET /api/sim?name=rain/tank/soil/temp/clear&val=0/1/2` | Inject a simulated condition |
+| `GET /api/profile?id=0..2` | Select plant profile |
+| `GET /api/mute` | Silence the buzzer |
+| `GET /api/weather` | Force a weather refresh |
+
+## Documentation
+- [Hardware and wiring](docs/wiki/Hardware.md), [Calibration](docs/wiki/Calibration.md), [Troubleshooting](docs/wiki/Troubleshooting.md)
 - `docs/SAR_Project1_deOliveira_Garcia.docx` - project report
 - `docs/Project1_Report.docx`, `docs/Project1_Presentation.pptx`, `docs/Project1_Code_and_Sensor_Guide.docx`
 
 ## Limitations
-Unauthenticated HTTP dashboard and plain-HTTP weather request (classroom demo only); resistive soil probe corrodes; forecast temperature, not measured at the plant.
+Unauthenticated HTTP dashboard and plain-HTTP weather request (classroom demo only, do not expose to the internet); resistive soil probe corrodes; forecast temperature, not measured at the plant.
+
+## License
+MIT, see [LICENSE](LICENSE). Contributions: see [CONTRIBUTING.md](CONTRIBUTING.md).
