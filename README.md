@@ -9,6 +9,8 @@ Built by **Luis de Oliveira** and **Uriel Garcia** for ENGR 4399 ST: Cyber-Physi
 The basic idea (soil sensor + relay + pump) is inspired by the Instagram video
 "Automatic Plant Watering System" by **eazytronic3795**.
 
+![Complete build: plant, tank with pump, and ESP32 board](docs/images/overview.jpg)
+
 ## Features
 - Soil moisture and tank-level sensing (ADC1, averaged, calibrated)
 - State machine: IDLE / WATERING / SOAKING / FAULT with hysteresis, 8 s run limit, soak delay, response check, latching fault
@@ -31,6 +33,13 @@ ESP32 dev board (30-pin), Keyestudio soil moisture + water level sensors, 1-ch 5
 | 3V3 / VIN / GND | sensors+OLED / relay / common ground |
 
 Pump supply: + to relay COM, NO to pump red, pump black to supply -. Full wiring in [docs/wiki/Hardware.md](docs/wiki/Hardware.md).
+
+### Build photos
+| Electronics board (ESP32, OLED, buzzer, relay) | Tank with pump and level sensor |
+|---|---|
+| ![Electronics board](docs/images/electronics-board.jpg) | ![Tank, pump and water level sensor](docs/images/tank-pump-level-sensor.jpg) |
+
+![Plant with soil probe and watering tube](docs/images/plant-and-probe.jpg)
 
 ## Quick start
 1. Arduino IDE, board **ESP32 Dev Module**; install **Adafruit SSD1306** and **Adafruit GFX Library**.

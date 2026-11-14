@@ -14,5 +14,20 @@ ESP32 dev board (30-pin), Keyestudio soil moisture sensor, Keyestudio water leve
 
 Relay screws: pump supply (+) to **COM**, **NO** to pump red wire, pump black wire to supply (-). All grounds on the ESP32 side must be common.
 
+## Photos
+![Complete build](../images/overview.jpg)
+
+**Electronics board:** ESP32, OLED, buzzer and relay on the breadboard.
+
+![Electronics board](../images/electronics-board.jpg)
+
+**Tank:** submersible pump taped in a bin, with the water level sensor at the bottom.
+
+![Tank, pump and level sensor](../images/tank-pump-level-sensor.jpg)
+
+**Plant:** the soil probe sits in the soil and the clear tube delivers water to the pot.
+
+![Plant with soil probe and tube](../images/plant-and-probe.jpg)
+
 ## Safety
 Keep water away from the electronics and run `firmware/RelayTest` first to confirm relay polarity before connecting the pump. D34 and D35 are input-only ADC1 pins, which keeps readings usable while Wi-Fi is on.
