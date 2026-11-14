@@ -9,7 +9,7 @@ Built by **Luis de Oliveira** and **Uriel Garcia** for ENGR 4399 ST: Cyber-Physi
 The basic idea (soil sensor + relay + pump) is inspired by the Instagram video
 "Automatic Plant Watering System" by **eazytronic3795**.
 
-![Complete build: plant, tank with pump, and ESP32 board](docs/images/overview.jpg)
+<p align="center"><img src="docs/images/overview.jpg" alt="Complete build: plant, tank with pump, and ESP32 board" width="700"></p>
 
 ## Features
 - Soil moisture and tank-level sensing (ADC1, averaged, calibrated)
@@ -35,11 +35,12 @@ ESP32 dev board (30-pin), Keyestudio soil moisture + water level sensors, 1-ch 5
 Pump supply: + to relay COM, NO to pump red, pump black to supply -. Full wiring in [docs/wiki/Hardware.md](docs/wiki/Hardware.md).
 
 ### Build photos
-| Electronics board (ESP32, OLED, buzzer, relay) | Tank with pump and level sensor |
-|---|---|
-| ![Electronics board](docs/images/electronics-board.jpg) | ![Tank, pump and water level sensor](docs/images/tank-pump-level-sensor.jpg) |
-
-![Plant with soil probe and watering tube](docs/images/plant-and-probe.jpg)
+<p align="center">
+  <img src="docs/images/electronics-board.jpg" alt="Electronics board" width="330">
+  <img src="docs/images/tank-pump-level-sensor.jpg" alt="Tank, pump and water level sensor" width="330">
+  <img src="docs/images/plant-and-probe.jpg" alt="Plant with soil probe and watering tube" width="330">
+</p>
+<p align="center"><em>Left to right: ESP32 + OLED + buzzer + relay board; tank with pump and level sensor; plant with soil probe and tube.</em></p>
 
 ## Quick start
 1. Arduino IDE, board **ESP32 Dev Module**; install **Adafruit SSD1306** and **Adafruit GFX Library**.
