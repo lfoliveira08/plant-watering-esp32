@@ -1,0 +1,26 @@
+name: Build firmware
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sketch: [RealHardware_Dashboard, RelayTest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install ESP32 core and libraries
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+          arduino-cli lib install "Adafruit SSD1306" "Adafruit GFX Library"
+      - name: Compile ${{ matrix.sketch }}
+        run: arduino-cli compile --fqbn esp32:esp32:esp32 firmware/${{ matrix.sketch }}
